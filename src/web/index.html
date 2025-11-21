@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<title>Binary Decoder</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: block;
+}
+
+select, textarea, button {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+textarea {
+    height: 180px;
+    font-family: monospace;
+}
+
+button {
+    background: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background: #004999;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Binary Decoder</h2>
+
+    <label>Binary</label>
+    <select id="binary">
+        <option>MessagePack</option>
+        <option>CBOR</option>
+        <option>BSON</option>
+        <option>JSON</option>
+    </select>
+
+    <label>Binary / Hex Input</label>
+    <textarea id="inputText" placeholder="00 15 00 44 ..."></textarea>
+
+    <button onclick="sendDecode()">Decode</button>
+
+    <label>Decoded Output (JSON)</label>
+    <textarea id="outputText" readonly></textarea>
+</div>
+
+<!-- JavaScript -->
+<script>
+async function sendDecode() {
+    const binary = document.getElementById("binary").value;
+    const data = document.getElementById("inputText").value;
+
+    const payload = {
+        binary: binary,
+        data: data
+    };
+
+    try {
+        const res = await fetch("http://localhost:2500/api/decode", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+
+        document.getElementById("outputText").value =
+            JSON.stringify(json, null, 2);
+
+    } catch (err) {
+        document.getElementById("outputText").value =
+            "Decode error: " + err;
+    }
+}
+</script>
+
+</body>
+</html>
